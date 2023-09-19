@@ -16,7 +16,7 @@ export const ThemesProvider = ({ children }: { children: React.ReactNode }) => {
   if (!['light', 'dark'].includes(localThemeRaw)) {
     const systemTheme =
       window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
+        window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light';
 
@@ -52,7 +52,7 @@ export const ThemesProvider = ({ children }: { children: React.ReactNode }) => {
     <ThemeContext.Provider
       value={{
         toggleTheme,
-        mode: themeRef.current,
+        mode: initialTheme,
       }}
     >
       {children}
