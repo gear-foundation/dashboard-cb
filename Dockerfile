@@ -1,13 +1,9 @@
-FROM node:buster as BUILDER
+FROM node:18-alpine
 
-WORKDIR /app
-COPY . .
-RUN apt update && apt install -y git
-RUN yarn install && yarn build
+WORKDIR /usr/src
 
-# --------------------------------------------------
-FROM nginx
+COPY . /usr/src
 
-COPY --from=BUILDER /app/build /usr/share/nginx/html
+RUN yarn install
 
-EXPOSE 80
+CMD ["yarn", "vite"]
