@@ -8,4 +8,8 @@ RUN apk update && apk add --no-cache git
 
 RUN yarn install
 
+RUN yarn global add eslint --dev
+
+RUN yarn build
+
 CMD ["yarn", "vite", "--host", "0.0.0.0"]
