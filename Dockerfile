@@ -3,6 +3,7 @@ FROM node:18-alpine
 WORKDIR /opt
 
 COPY . /opt
+COPY .eslintrc.json /opt
 
 RUN apk update && apk add --no-cache git
 
