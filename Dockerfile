@@ -4,7 +4,7 @@ WORKDIR /usr/src
 
 COPY . /usr/src
 
-RUN apk update && apk install -y git
+RUN apk update && apk add --no-cache git
 
 RUN yarn install
 
