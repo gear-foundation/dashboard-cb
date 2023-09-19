@@ -1,8 +1,8 @@
 FROM node:18-alpine
 
-WORKDIR /usr/src
+WORKDIR /opt
 
-COPY . /usr/src
+COPY . /opt
 
 RUN apk update && apk add --no-cache git
 
