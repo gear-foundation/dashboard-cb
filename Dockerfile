@@ -1,15 +1,13 @@
-FROM node:18-alpine
+FROM node:buster as BUILDER
 
-WORKDIR /opt
+WORKDIR /app
+COPY . .
+RUN apt update && apt install -y git
+RUN yarn install && yarn build
 
-COPY . /opt
+# --------------------------------------------------
+FROM nginx
 
-COPY .eslintrc.json /opt
+COPY --from=BUILDER /app/build /usr/share/nginx/html
 
-RUN apk update && apk add --no-cache git
-
-RUN yarn global add eslint --dev
-
-RUN yarn install
-
-CMD ["yarn", "vite", "--host", "0.0.0.0"]
+EXPOSE 80
