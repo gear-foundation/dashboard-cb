@@ -6,9 +6,9 @@ COPY . /usr/src
 
 RUN apk update && apk add --no-cache git
 
-RUN yarn install
-
 RUN yarn global add eslint --dev
+
+RUN yarn install
 
 RUN yarn build
 
