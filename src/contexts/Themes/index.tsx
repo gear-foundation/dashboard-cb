@@ -16,7 +16,7 @@ export const ThemesProvider = ({ children }: { children: React.ReactNode }) => {
   if (!['light', 'dark'].includes(localThemeRaw)) {
     const systemTheme =
       window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
+      window.matchMedia('(prefers-color-scheme: light)').matches
         ? 'dark'
         : 'light';
 
@@ -31,15 +31,6 @@ export const ThemesProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = React.useState<Theme>(initialTheme);
   const themeRef = useRef(theme);
 
-  // Automatically change theme on system change.
-  window
-    .matchMedia('(prefers-color-scheme: dark)')
-    .addEventListener('change', (event) => {
-      const newTheme = event.matches ? 'dark' : 'light';
-      localStorage.setItem('theme', newTheme);
-      setStateWithRef(newTheme, setTheme, themeRef);
-    });
-
   const toggleTheme = (maybeTheme: Theme | null = null): void => {
     const newTheme =
       maybeTheme || (themeRef.current === 'dark' ? 'light' : 'dark');
@@ -52,7 +43,7 @@ export const ThemesProvider = ({ children }: { children: React.ReactNode }) => {
     <ThemeContext.Provider
       value={{
         toggleTheme,
-        mode: initialTheme,
+        mode: themeRef.current,
       }}
     >
       {children}
