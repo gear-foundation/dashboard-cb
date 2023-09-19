@@ -8,4 +8,4 @@ RUN apk update && apk add --no-cache git
 
 RUN yarn install
 
-CMD ["yarn", "vite", "--host 0.0.0.0"]
+CMD ["yarn", "vite", "--host", "0.0.0.0"]
