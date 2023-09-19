@@ -17,7 +17,7 @@ export const ThemedRouter = () => {
 
   return (
     <ThemeProvider theme={{ mode }}>
-      <Entry mode={mode} theme={`${network.name}-relay`}>
+      <Entry mode='light' theme={`${network.name}-relay`}>
         <Router />
       </Entry>
     </ThemeProvider>
