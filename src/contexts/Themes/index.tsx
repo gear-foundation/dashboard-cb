@@ -7,28 +7,28 @@ import { defaultThemeContext } from './defaults';
 import type { Theme, ThemeContextInterface } from './types';
 
 export const ThemesProvider = ({ children }: { children: React.ReactNode }) => {
-  let initialTheme: Theme = 'light';
+  // let initialTheme: Theme = 'light';
 
   // get the current theme
-  const localThemeRaw = localStorage.getItem('theme') || '';
+  // const localThemeRaw = localStorage.getItem('theme') || '';
 
   // Provide system theme if raw theme is not valid.
-  if (!['light', 'dark'].includes(localThemeRaw)) {
-    const systemTheme =
-      window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: light)').matches
-        ? 'dark'
-        : 'light';
+  // if (!['light', 'dark'].includes(localThemeRaw)) {
+  //   const systemTheme =
+  //     window.matchMedia &&
+  //     window.matchMedia('(prefers-color-scheme: light)').matches
+  //       ? 'dark'
+  //       : 'light';
 
-    initialTheme = systemTheme;
-    localStorage.setItem('theme', systemTheme);
-  } else {
-    // `localThemeRaw` is a valid theme.
-    initialTheme = localThemeRaw as Theme;
-  }
+  //   initialTheme = systemTheme;
+  //   localStorage.setItem('theme', systemTheme);
+  // } else {
+  //   // `localThemeRaw` is a valid theme.
+  //   initialTheme = localThemeRaw as Theme;
+  // }
 
   // the theme mode
-  const [theme, setTheme] = React.useState<Theme>(initialTheme);
+  const [theme, setTheme] = React.useState<Theme>('light');
   const themeRef = useRef(theme);
 
   const toggleTheme = (maybeTheme: Theme | null = null): void => {
