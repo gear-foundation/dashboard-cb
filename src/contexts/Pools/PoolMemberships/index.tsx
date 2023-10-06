@@ -96,13 +96,15 @@ export const PoolMembershipsProvider = ({
           ? rmCommas(membership.points)
           : '0';
 
-        const balance =
-          (
-            await api.call.nominationPoolsApi.pointsToBalance(
-              membership.poolId,
-              membership.points
-            )
-          )?.toString() || '0';
+        // const balance =
+        //   (
+        //     await api.call.nominationPoolsApi.pointsToBalance(
+        //       membership.poolId,
+        //       membership.points
+        //     )
+        //   )?.toString() || '0';
+
+        const balance = '0';
 
         membership = {
           ...membership,
