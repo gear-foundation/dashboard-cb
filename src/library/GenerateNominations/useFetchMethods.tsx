@@ -100,12 +100,13 @@ export const useFetchMehods = () => {
     );
 
     // choose shuffled subset of waiting
-    if (waiting.length) {
+    if (waiting.length && active.length) {
       waiting = shuffle(waiting).slice(0, 4);
-    }
-    // choose shuffled subset of active
-    if (waiting.length) {
       active = shuffle(active).slice(0, 12);
+    } else if (waiting.length && !active.length) {
+      waiting = shuffle(waiting).slice(0, 16);
+    } else if (!waiting.length && active.length) {
+      active = shuffle(active).slice(0, 16);
     }
 
     return shuffle(waiting.concat(active));
