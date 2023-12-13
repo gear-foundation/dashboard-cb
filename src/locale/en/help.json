@@ -94,7 +94,7 @@
         "Era",
         [
           "At the end of each era, validators are rewarded {NETWORK_UNIT} based on how many era points they accumulated in that era. This {NETWORK_UNIT} reward is then distributed amongst the nominators of the validator via a payout.",
-          "1 era is currently 24 hours in Vara."
+          "1 era is currently 12 hours in Vara."
         ]
       ],
       "eraPoints": [
