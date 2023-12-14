@@ -5,10 +5,6 @@ import type { HelpItems } from 'contexts/Help/types';
 
 export const HelpConfig: HelpItems = [
   {
-    key: 'vault',
-    definitions: ['Polkadot Vault'],
-  },
-  {
     key: 'overview',
     definitions: [
       'Total Nominators',
@@ -26,20 +22,21 @@ export const HelpConfig: HelpItems = [
       'Reserve Balance For Existential Deposit',
     ],
     external: [
+      ['VaraOverview', 'https://wiki.vara.network/docs/intro', 'vara.network'],
       [
-        'connectAccounts',
-        'https://support.polkadot.network/support/solutions/articles/65000182121-how-to-use-the-staking-dashboard-connecting-your-account',
-        'polkadot.network',
+        'tokenomy',
+        'https://wiki.vara.network/docs/tokenomics/',
+        'vara.network',
       ],
       [
-        'howToUse',
-        'https://support.polkadot.network/support/solutions/articles/65000182104-how-to-use-the-staking-dashboard-overview',
-        'polkadot.network',
+        'createAccounts',
+        'https://wiki.vara.network/docs/account/create-account',
+        'vara.network',
       ],
       [
-        'stakeDot',
-        'https://support.polkadot.network/support/solutions/articles/65000182104-how-to-use-the-staking-dashboard-overview',
-        'polkadot.network',
+        'stakeVARA',
+        'https://wiki.vara.network/docs/staking/overview',
+        'vara.network',
       ],
     ],
   },
@@ -58,34 +55,14 @@ export const HelpConfig: HelpItems = [
     ],
     external: [
       [
-        'changeDestination',
-        'https://support.polkadot.network/support/solutions/articles/65000182220-how-to-use-the-staking-dashboard-changing-reward-destination',
-        'polkadot.network',
-      ],
-      [
-        'bondMore',
-        'https://support.polkadot.network/support/solutions/articles/65000182207-how-to-use-the-staking-dashboard-bond-more-tokens-to-your-existing-stake',
-        'polkadot.network',
+        'nominate',
+        'https://wiki.vara.network/docs/staking/nominate#via-vara-staking-dashboard',
+        'vara.network',
       ],
       [
         'unbondingTokens',
-        'https://support.polkadot.network/support/solutions/articles/65000182201-how-to-use-the-staking-dashboard-unbonding-your-tokens',
-        'polkadot.network',
-      ],
-      [
-        'rebonding',
-        'https://support.polkadot.network/support/solutions/articles/65000182221-how-to-use-the-staking-dashboard-rebonding',
-        'polkadot.network',
-      ],
-      [
-        'changeAccount',
-        'https://support.polkadot.network/support/solutions/articles/65000182218-how-to-use-the-staking-dashboard-changing-your-controller-account',
-        'polkadot.network',
-      ],
-      [
-        'changeNominations',
-        'https://support.polkadot.network/support/solutions/articles/65000182518-how-to-use-the-staking-dashboard-changing-your-nominations',
-        'polkadot.network',
+        'https://wiki.vara.network/docs/staking/nominate#unstaking',
+        'vara.network',
       ],
     ],
   },
@@ -106,14 +83,14 @@ export const HelpConfig: HelpItems = [
     ],
     external: [
       [
-        'createPools',
-        'https://support.polkadot.network/support/solutions/articles/65000182388-how-to-use-the-staking-dashboard-creating-nomination-pools',
-        'polkadot.network',
+        'stakePools',
+        'https://wiki.vara.network/docs/staking/nominate#via-vara-staking-dashboard-1',
+        'vara.network',
       ],
       [
         'claimRewards',
-        'https://support.polkadot.network/support/solutions/articles/65000182399-how-to-use-staking-dashboard-claiming-nomination-pool-rewards',
-        'polkadot.network',
+        'https://wiki.vara.network/docs/staking/nominate#rewards-and-withdrawals',
+        'vara.network',
       ],
     ],
   },
@@ -132,13 +109,7 @@ export const HelpConfig: HelpItems = [
       'Over Subscribed',
       'Blocked Nominations',
     ],
-    external: [
-      [
-        'chooseValidators',
-        'https://support.polkadot.network/support/solutions/articles/65000150130-how-do-i-know-which-validators-to-choose-',
-        'polkadot.network',
-      ],
-    ],
+    external: [],
   },
   {
     key: 'payouts',
@@ -160,5 +131,9 @@ export const HelpConfig: HelpItems = [
       'Wrong Transaction',
     ],
     external: [],
+  },
+  {
+    key: 'vault',
+    definitions: ['Polkadot Vault'],
   },
 ];
