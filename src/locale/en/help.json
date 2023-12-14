@@ -398,17 +398,14 @@
       ]
     },
     "externals": {
-      "bondMore": "Bond More Tokens to Your Existing Stake",
-      "changeAccount": "Changing your Controller Account",
-      "changeDestination": "Changing Your Payout Destination",
-      "changeNominations": "Changing Your Nominations",
+      "VaraOverview": "Vara Network overview",
+      "tokenomy": "VARA Token Utility & Crypto Economics",
+      "nominate": "How to set up as a nominator",
       "chooseValidators": "How do I Know Which Validators to Choose?",
       "claimRewards": "Claiming Nomination Pool Rewards",
-      "connectAccounts": "How to Connect Your Accounts",
-      "createPools": "Creating Nomination Pools",
-      "howToUse": "How to Use the Staking Dashboard: Overview",
-      "rebonding": "Rebonding",
-      "stakeDot": "Staking your DOT",
+      "createAccounts": "How to Create Vara Accounts",
+      "stakePools": "Staking via Nomination Pools",
+      "stakeVARA": "Staking your VARA",
       "unbondingTokens": "Unbonding Your Tokens"
     },
     "modal": {
