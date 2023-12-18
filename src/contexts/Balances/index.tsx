@@ -147,7 +147,7 @@ export const BalancesProvider = ({
             balance: {
               free,
               reserved: new BigNumber(accountData.reserved.toString()),
-              frozen: new BigNumber(accountData.frozen.toString()),
+              frozen: new BigNumber(accountData.miscFrozen.toString()),
             },
             locks: locks.toHuman().map((l: AnyApi) => ({
               ...l,
