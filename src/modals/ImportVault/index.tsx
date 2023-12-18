@@ -7,14 +7,13 @@ import {
   ButtonText,
   HardwareAddress,
   HardwareStatusBar,
-  PolkadotIcon,
+  Polkicon,
 } from '@polkadot-cloud/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useConnect } from 'contexts/Connect';
-import { useVaultHardware } from 'contexts/Hardware/Vault';
+import { useVaultAccounts } from 'contexts/Hardware/Vault/VaultAccounts';
 import { usePrompt } from 'contexts/Prompt';
-import { ReactComponent as Icon } from 'img/polkadotVault.svg';
+import PolkadotVaultSVG from '@polkadot-cloud/assets/extensions/svg/polkadotvault.svg?react';
 import { Confirm } from 'library/Import/Confirm';
 import { Heading } from 'library/Import/Heading';
 import { NoAccounts } from 'library/Import/NoAccounts';
@@ -22,15 +21,14 @@ import { Remove } from 'library/Import/Remove';
 import { AddressesWrapper } from 'library/Import/Wrappers';
 import type { AnyJson } from 'types';
 import { useOverlay } from '@polkadot-cloud/react/hooks';
-import { useTheme } from 'contexts/Themes';
+import { useOtherAccounts } from 'contexts/Connect/OtherAccounts';
 import { Reader } from './Reader';
 
 export const ImportVault = () => {
   const { t } = useTranslation();
   const { replaceModal } = useOverlay().modal;
-  const { renameImportedAccount } = useConnect();
+  const { renameOtherAccount } = useOtherAccounts();
   const { openPromptWith, status: promptStatus } = usePrompt();
-  const { mode } = useTheme();
 
   const {
     vaultAccounts,
@@ -39,12 +37,12 @@ export const ImportVault = () => {
     addVaultAccount,
     removeVaultAccount,
     getVaultAccount,
-  } = useVaultHardware();
+  } = useVaultAccounts();
   const { setModalResize } = useOverlay().modal;
 
   const renameHandler = (address: string, newName: string) => {
     renameVaultAccount(address, newName);
-    renameImportedAccount(address, newName);
+    renameOtherAccount(address, newName);
   };
 
   const openConfirmHandler = (address: string, index: number) => {
@@ -73,7 +71,7 @@ export const ImportVault = () => {
     <>
       {vaultAccounts.length === 0 ? (
         <NoAccounts
-          Icon={Icon}
+          Icon={PolkadotVaultSVG}
           text={t('noVaultAccountsImported', { ns: 'modals' })}
         >
           <div>
@@ -99,14 +97,7 @@ export const ImportVault = () => {
                   address={address}
                   index={index}
                   initial={name}
-                  Identicon={
-                    <PolkadotIcon
-                      dark={mode === 'dark'}
-                      nocopy
-                      address={address}
-                      size={40}
-                    />
-                  }
+                  Identicon={<Polkicon address={address} size={40} />}
                   existsHandler={vaultAccountExists}
                   renameHandler={renameHandler}
                   openRemoveHandler={openRemoveHandler}
@@ -131,7 +122,7 @@ export const ImportVault = () => {
           </AddressesWrapper>
           <HardwareStatusBar
             show
-            Icon={Icon}
+            Icon={PolkadotVaultSVG}
             text={t('vaultAccounts', {
               ns: 'modals',
               count: vaultAccounts.length,

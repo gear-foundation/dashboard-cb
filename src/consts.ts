@@ -3,15 +3,16 @@
 
 import { stringToU8a } from '@polkadot/util';
 import BigNumber from 'bignumber.js';
+import type { Plugin } from 'types';
 
 /*
  * Global Constants
  */
-export const AppVersion = '1.0.8';
-export const DappName = 'Vara Staking Dashboard';
-export const PolkadotUrl = 'https://wiki.vara-network.io/docs/staking/overview';
+export const AppVersion = '1.1.3';
+export const DappName = 'Polkadot Staking Dashboard';
+export const PolkadotUrl = 'https://polkadot.network/features/staking/';
 export const DefaultNetwork = 'vara';
-
+export const ManualSigners = ['ledger', 'vault'];
 /*
  * Data Structure Helpers
  */
@@ -32,7 +33,12 @@ export const TipsThresholdMedium = 1200;
 /*
  * Available plugins
  */
-export const PluginsList = ['subscan', 'binance_spot', 'tips'];
+export const PluginsList: Plugin[] = [
+  'subscan',
+  'binance_spot',
+  'tips',
+  'polkawatch',
+];
 
 /*
  * Fallback config values
@@ -40,7 +46,6 @@ export const PluginsList = ['subscan', 'binance_spot', 'tips'];
 export const FallbackMaxNominations = new BigNumber(16);
 export const FallbackBondingDuration = new BigNumber(28);
 export const FallbackSessionsPerEra = new BigNumber(6);
-export const FallbackNominatorRewardedPerValidator = new BigNumber(512);
 export const FallbackMaxElectingVoters = new BigNumber(22500);
 export const FallbackExpectedBlockTime = new BigNumber(6000);
 export const FallbackEpochDuration = new BigNumber(2400);
@@ -48,10 +53,11 @@ export const FallbackEpochDuration = new BigNumber(2400);
 /*
  * Misc values
  */
-export const ListItemsPerPage = 50;
-export const ListItemsPerBatch = 30;
+export const ListItemsPerPage = 25;
+export const ListItemsPerBatch = 25;
 export const MinBondPrecision = 3;
 export const MaxPayoutDays = 60;
+export const MaxEraRewardPointsEras = 14;
 
 /*
  * Third party API keys and endpoints
@@ -76,7 +82,7 @@ export const DefaultParams = {
   falloff: 0.05,
   maxInflation: 0.1,
   minInflation: 0.025,
-  stakeTarget: 0.8,
+  stakeTarget: 0.5,
 };
 
 /*

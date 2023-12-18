@@ -15,14 +15,14 @@ import {
 import { ExtensionsArray } from '@polkadot-cloud/assets/extensions';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useExtensions } from 'contexts/Extensions';
-import { Close } from 'library/Modal/Close';
-import { SelectItems } from 'library/SelectItems';
-import type { AnyFunction } from 'types';
 import {
+  useExtensions,
   useEffectIgnoreInitial,
   useOverlay,
 } from '@polkadot-cloud/react/hooks';
+import { Close } from 'library/Modal/Close';
+import { SelectItems } from 'library/SelectItems';
+import type { AnyFunction } from 'types';
 import { Extension } from './Extension';
 import { Ledger } from './Ledger';
 import { Proxies } from './Proxies';
@@ -32,16 +32,21 @@ import { ExtensionsWrapper } from './Wrappers';
 
 export const Connect = () => {
   const { t } = useTranslation('modals');
-  const { extensions } = useExtensions();
+  const { extensionsStatus } = useExtensions();
   const { replaceModal, setModalHeight, modalMaxHeight } = useOverlay().modal;
 
-  const installed = ExtensionsArray.filter((a) =>
-    extensions.find((b) => b.id === a.id)
-  );
+  const inNova = !!window?.walletExtension?.isNovaWallet || false;
 
-  const other = ExtensionsArray.filter(
-    (a) => !installed.find((b) => b.id === a.id)
+  // If in Nova Wallet, only display it in extension options, otherwise, remove developer tool extensions from web options.
+  const developerTools = ['polkadot-js'];
+  const web = !inNova
+    ? ExtensionsArray.filter((a) => !developerTools.includes(a.id))
+    : ExtensionsArray.filter((a) => a.id === 'polkadot-js');
+
+  const installed = web.filter((a) =>
+    Object.keys(extensionsStatus).find((key) => key === a.id)
   );
+  const other = web.filter((a) => !installed.find((b) => b.id === a.id));
 
   // toggle read only management
   const [readOnlyOpen, setReadOnlyOpen] = useState(false);
@@ -72,7 +77,7 @@ export const Connect = () => {
   // Resize modal on state change.
   useEffectIgnoreInitial(() => {
     refreshModalHeight();
-  }, [section, readOnlyOpen, newProxyOpen, extensions]);
+  }, [section, readOnlyOpen, newProxyOpen, extensionsStatus]);
 
   useEffect(() => {
     window.addEventListener('resize', refreshModalHeight);
@@ -80,6 +85,48 @@ export const Connect = () => {
       window.removeEventListener('resize', refreshModalHeight);
     };
   }, []);
+
+  // Hardware connect options JSX.
+  const ConnectHardwareJSX = (
+    <>
+      <ActionItem text={t('hardware')} />
+      <ExtensionsWrapper>
+        <SelectItems layout="two-col">
+          {[Vault, Ledger].map((Item: AnyFunction, i: number) => (
+            <Item key={`hardware_item_${i}`} />
+          ))}
+        </SelectItems>
+      </ExtensionsWrapper>
+    </>
+  );
+
+  // Web extension connect options JSX.
+  const ConnectExtensionsJSX = (
+    <>
+      <ActionItem text={t('web')} />
+      <ExtensionsWrapper>
+        <SelectItems layout="two-col">
+          {installed.concat(other).map((extension, i) => (
+            <Extension key={`extension_item_${i}`} meta={extension} />
+          ))}
+        </SelectItems>
+      </ExtensionsWrapper>
+    </>
+  );
+
+  // Display hardware before extensions.
+  // If in Nova Wallet, display extensions before hardware.
+  const ConnectCombinedJSX = !inNova ? (
+    <>
+      {ConnectHardwareJSX}
+      {ConnectExtensionsJSX}
+    </>
+  ) : (
+    <>
+      {ConnectExtensionsJSX}
+      {ConnectHardwareJSX}
+    </>
+  );
 
   return (
     <>
@@ -143,23 +190,24 @@ export const Connect = () => {
         >
           <div className="section">
             <ModalPadding horizontalOnly ref={homeRef}>
-              <ActionItem text={t('hardware')} />
-              <ExtensionsWrapper>
-                <SelectItems layout="two-col">
-                  {[Vault, Ledger].map((Item: AnyFunction, i: number) => (
-                    <Item key={`hardware_item_${i}`} />
-                  ))}
-                </SelectItems>
-              </ExtensionsWrapper>
-
-              <ActionItem text={t('web')} />
-              <ExtensionsWrapper>
-                <SelectItems layout="two-col">
-                  {installed.concat(other).map((extension, i) => (
-                    <Extension key={`extension_item_${i}`} meta={extension} />
-                  ))}
-                </SelectItems>
-              </ExtensionsWrapper>
+              {ConnectCombinedJSX}
+              {!inNova && (
+                <>
+                  <ActionItem text={t('developerTools')} />
+                  <ExtensionsWrapper>
+                    <SelectItems layout="two-col">
+                      {ExtensionsArray.filter(
+                        (a) => a.id === 'polkadot-js'
+                      ).map((extension, i) => (
+                        <Extension
+                          key={`extension_item_${i}`}
+                          meta={extension}
+                        />
+                      ))}
+                    </SelectItems>
+                  </ExtensionsWrapper>
+                </>
+              )}
             </ModalPadding>
           </div>
           <div className="section">

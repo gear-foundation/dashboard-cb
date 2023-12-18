@@ -32,6 +32,7 @@
     // NOTE: These rules are being reviewed and comments justifying their deactivation will be
     // added.
     "react/require-default-props": "off",
+    "jsx-a11y/control-has-associated-label": "off",
     "react/no-access-state-in-setstate": "off",
     "react/destructuring-assignment": "off",
     "react/function-component-definition": "off",
@@ -91,13 +92,7 @@
         "singleReturnOnly": false
       }
     ],
-    "react/prop-types": "off",
-    "prettier/prettier": [
-      "error",
-      {
-        "endOfLine": "auto"
-      }
-    ]
+    "react/prop-types": "off"
   },
   "settings": {
     "import/resolver": {

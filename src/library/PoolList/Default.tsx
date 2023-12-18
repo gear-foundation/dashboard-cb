@@ -10,43 +10,48 @@ import { useTranslation } from 'react-i18next';
 import { ListItemsPerBatch, ListItemsPerPage } from 'consts';
 import { useApi } from 'contexts/Api';
 import { useFilters } from 'contexts/Filters';
-import { useNetworkMetrics } from 'contexts/Network';
+import { useNetworkMetrics } from 'contexts/NetworkMetrics';
 import { useBondedPools } from 'contexts/Pools/BondedPools';
 import { useTheme } from 'contexts/Themes';
 import { useUi } from 'contexts/UI';
 import { Tabs } from 'library/Filter/Tabs';
 import { usePoolFilters } from 'library/Hooks/usePoolFilters';
-import { Header, List, Wrapper as ListWrapper } from 'library/List';
+import {
+  FilterHeaderWrapper,
+  List,
+  ListStatusHeader,
+  Wrapper as ListWrapper,
+} from 'library/List';
 import { MotionContainer } from 'library/List/MotionContainer';
 import { Pagination } from 'library/List/Pagination';
 import { SearchInput } from 'library/List/SearchInput';
 import { Pool } from 'library/Pool';
+import { useNetwork } from 'contexts/Network';
 import { usePoolList } from './context';
 import type { PoolListProps } from './types';
 
 export const PoolList = ({
   allowMoreCols,
   pagination,
-  batchKey = '',
   disableThrottle,
   allowSearch,
   pools,
-  title,
   defaultFilters,
+  allowListFormat = true,
 }: PoolListProps) => {
   const { t } = useTranslation('library');
   const { mode } = useTheme();
+  const { isReady } = useApi();
   const {
-    isReady,
-    network: { colors },
-  } = useApi();
+    networkData: { colors },
+  } = useNetwork();
   const { isSyncing } = useUi();
   const { applyFilter } = usePoolFilters();
   const { activeEra } = useNetworkMetrics();
   const { listFormat, setListFormat } = usePoolList();
   const { getFilters, setMultiFilters, getSearchTerm, setSearchTerm } =
     useFilters();
-  const { fetchPoolsMetaBatch, poolSearchFilter, meta } = useBondedPools();
+  const { poolSearchFilter, poolsNominations } = useBondedPools();
 
   const includes = getFilters('include', 'pools');
   const excludes = getFilters('exclude', 'pools');
@@ -95,16 +100,15 @@ export const PoolList = ({
     setPoolsDefault(pools);
     setListPools(pools);
     setFetched(true);
-    fetchPoolsMetaBatch(batchKey, pools, true);
   };
 
   // handle filter / order update
   const handlePoolsFilterUpdate = (
     filteredPools: any = Object.assign(poolsDefault)
   ) => {
-    filteredPools = applyFilter(includes, excludes, filteredPools, batchKey);
+    filteredPools = applyFilter(includes, excludes, filteredPools);
     if (searchTerm) {
-      filteredPools = poolSearchFilter(filteredPools, batchKey, searchTerm);
+      filteredPools = poolSearchFilter(filteredPools, searchTerm);
     }
     setListPools(filteredPools);
     setPage(1);
@@ -114,8 +118,8 @@ export const PoolList = ({
   const handleSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
     const newValue = e.currentTarget.value;
     let filteredPools = Object.assign(poolsDefault);
-    filteredPools = applyFilter(includes, excludes, filteredPools, batchKey);
-    filteredPools = poolSearchFilter(filteredPools, batchKey, newValue);
+    filteredPools = applyFilter(includes, excludes, filteredPools);
+    filteredPools = poolSearchFilter(filteredPools, newValue);
 
     // ensure no duplicates
     filteredPools = filteredPools.filter(
@@ -154,10 +158,10 @@ export const PoolList = ({
   // List ui changes / validator changes trigger re-render of list.
   useEffect(() => {
     // only filter when pool nominations have been synced.
-    if (!isSyncing && meta[batchKey]?.nominations) {
+    if (!isSyncing && Object.keys(poolsNominations).length) {
       handlePoolsFilterUpdate();
     }
-  }, [isSyncing, includes, excludes, meta]);
+  }, [isSyncing, includes, excludes, Object.keys(poolsNominations).length]);
 
   // Scroll to top of the window on every filter.
   useEffect(() => {
@@ -176,25 +180,6 @@ export const PoolList = ({
 
   return (
     <ListWrapper>
-      <Header>
-        <div>
-          <h4>{title}</h4>
-        </div>
-        <div>
-          <button type="button" onClick={() => setListFormat('row')}>
-            <FontAwesomeIcon
-              icon={faBars}
-              color={listFormat === 'row' ? colors.primary[mode] : 'inherit'}
-            />
-          </button>
-          <button type="button" onClick={() => setListFormat('col')}>
-            <FontAwesomeIcon
-              icon={faGripVertical}
-              color={listFormat === 'col' ? colors.primary[mode] : 'inherit'}
-            />
-          </button>
-        </div>
-      </Header>
       <List $flexBasisLarge={allowMoreCols ? '33.33%' : '50%'}>
         {allowSearch && poolsDefault.length > 0 && (
           <SearchInput
@@ -202,31 +187,58 @@ export const PoolList = ({
             placeholder={t('search')}
           />
         )}
-        <Tabs
-          config={[
-            {
-              label: t('all'),
-              includes: [],
-              excludes: [],
-            },
-            {
-              label: t('active'),
-              includes: ['active'],
-              excludes: ['locked', 'destroying'],
-            },
-            {
-              label: t('locked'),
-              includes: ['locked'],
-              excludes: [],
-            },
-            {
-              label: t('destroying'),
-              includes: ['destroying'],
-              excludes: [],
-            },
-          ]}
-          activeIndex={1}
-        />
+        <FilterHeaderWrapper>
+          <div>
+            <Tabs
+              config={[
+                {
+                  label: t('all'),
+                  includes: [],
+                  excludes: [],
+                },
+                {
+                  label: t('active'),
+                  includes: ['active'],
+                  excludes: ['locked', 'destroying'],
+                },
+                {
+                  label: t('locked'),
+                  includes: ['locked'],
+                  excludes: [],
+                },
+                {
+                  label: t('destroying'),
+                  includes: ['destroying'],
+                  excludes: [],
+                },
+              ]}
+              activeIndex={1}
+            />
+          </div>
+          <div>
+            {allowListFormat && (
+              <div>
+                <button type="button" onClick={() => setListFormat('row')}>
+                  <FontAwesomeIcon
+                    icon={faBars}
+                    color={
+                      listFormat === 'row' ? colors.primary[mode] : 'inherit'
+                    }
+                  />
+                </button>
+                <button type="button" onClick={() => setListFormat('col')}>
+                  <FontAwesomeIcon
+                    icon={faGripVertical}
+                    color={
+                      listFormat === 'col' ? colors.primary[mode] : 'inherit'
+                    }
+                  />
+                </button>
+              </div>
+            )}
+          </div>
+        </FilterHeaderWrapper>
+
         {pagination && poolsToDisplay.length > 0 && (
           <Pagination page={page} total={totalPages} setter={setPage} />
         )}
@@ -248,18 +260,14 @@ export const PoolList = ({
                     },
                   }}
                 >
-                  <Pool
-                    pool={pool}
-                    batchKey={batchKey}
-                    batchIndex={poolsDefault.indexOf(pool)}
-                  />
+                  <Pool pool={pool} />
                 </motion.div>
               ))}
             </>
           ) : (
-            <h4 className="none">
+            <ListStatusHeader>
               {isSyncing ? `${t('syncingPoolList')}...` : t('noMatch')}
-            </h4>
+            </ListStatusHeader>
           )}
         </MotionContainer>
       </List>

@@ -5,9 +5,11 @@ import React, { useState } from 'react';
 import { NetworkList } from 'config/networks';
 import { AppVersion } from 'consts';
 import { useApi } from 'contexts/Api';
-import { useConnect } from 'contexts/Connect';
 import { useUi } from 'contexts/UI';
 import { useEffectIgnoreInitial } from '@polkadot-cloud/react/hooks';
+import { useImportedAccounts } from 'contexts/Connect/ImportedAccounts';
+import { localStorageOrDefault } from '@polkadot-cloud/utils';
+import type { ExternalAccount } from '@polkadot-cloud/react/types';
 
 export const MigrateProvider = ({
   children,
@@ -15,8 +17,8 @@ export const MigrateProvider = ({
   children: React.ReactNode;
 }) => {
   const { isReady } = useApi();
-  const { accounts } = useConnect();
   const { isNetworkSyncing } = useUi();
+  const { accounts } = useImportedAccounts();
 
   // The local app version of the current user.
   const localAppVersion = localStorage.getItem('app_version');
@@ -44,6 +46,27 @@ export const MigrateProvider = ({
       localStorage.removeItem(`${n.name}_active_proxy`);
     });
 
+  // Removes `system` added external accounts from local storage.
+  const removeSystemExternalAccounts = () => {
+    const current = localStorageOrDefault('external_accounts', [], true);
+    if (!current.length) return;
+
+    const updated =
+      (current as ExternalAccount[])?.filter((a) => a.addedBy !== 'system') ||
+      [];
+
+    if (!updated.length) {
+      localStorage.removeItem('external_accounts');
+    } else {
+      localStorage.setItem('external_accounts', JSON.stringify(updated));
+    }
+  };
+
+  // Removes `westend_era_exposures` from local storage.
+  const removeWestendEraExposures = () => {
+    localStorage.removeItem('westend_era_exposures');
+  };
+
   useEffectIgnoreInitial(() => {
     if (isReady && !isNetworkSyncing && !done) {
       // Carry out migrations if local version is different to current version.
@@ -64,6 +87,16 @@ export const MigrateProvider = ({
         // Remove legacy local active proxy records.
         removeDeprecatedActiveProxies();
 
+        // Added in 1.1.2
+        //
+        // Remove local `system` external accounts.
+        removeSystemExternalAccounts();
+
+        // Added in 1.1.3
+        //
+        // Remove local `era_exposures`.
+        removeWestendEraExposures();
+
         // Finally,
         //
         // Update local version to current app version.
@@ -71,7 +104,7 @@ export const MigrateProvider = ({
         setDone(true);
       }
     }
-  }, [isNetworkSyncing]);
+  }, [isReady, isNetworkSyncing]);
 
   return (
     <MigrateContext.Provider value={{}}>{children}</MigrateContext.Provider>

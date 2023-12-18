@@ -18,7 +18,7 @@
           "The amount of {NETWORK_UNIT} needed to be actively nominating in an era.",
           "This value applies to nominators and for pools. In the pool's case, it is important to join a pool with a total bond amount of at least this value.",
           "Being above this metric simply guarantees that you will be present in the active nominator set for the era. This amount still does not guarantee rewards, as your active nominations may still be over-subscribed.",
-          "Only the top {MAX_NOMINATOR_REWARDED_PER_VALIDATOR} nominators are rewarded per validator in {NETWORK_NAME}. Ensuring your active bond is above this threshold will increase your chances of rewards.",
+          "Only the top {MAX_EXPOSURE_PAGE_SIZE} nominators are rewarded per validator in {NETWORK_NAME}. Ensuring your active bond is above this threshold will increase your chances of rewards.",
           "You can keep track of these metrics from the dashboard and amend your staking position if necessary, whether increasing your bonded {NETWORK_UNIT}, changing your nominations, or joining another pool."
         ]
       ],
@@ -75,26 +75,18 @@
           "A validator can update their commission rates as and when they please, and such changes will have an impact on your profitability. Be sure to monitor your nominations on this dashboard to keep updated on their commission rates."
         ]
       ],
-      "controllerAccountEligibility": [
-        "Controller Account Eligibility",
-        [
-          "For an account to become a controller, it must have a balance of at least the existential deposit. On {NETWORK_NAME} the existential deposit amount is {EXISTENTIAL_DEPOSIT} {NETWORK_UNIT}.",
-          "If an account does not have at least this amount, you will see the 'Not Enough {NETWORK_UNIT}' message overlaying it.",
-          "Topping up an account with at least {EXISTENTIAL_DEPOSIT} {NETWORK_UNIT} will make it eligible and selectable as a controller."
-        ]
-      ],
       "epoch": [
         "Epoch",
         [
           "An epoch is another name for a session in {NETWORK_NAME}. Each era is divided into 6 epochs during which validators are assigned as block producers to specific time frames or slots.",
-          "1 epoch is currently 4 hours in Vara."
+          "1 epoch is currently 4 hours in Polkadot."
         ]
       ],
       "era": [
         "Era",
         [
           "At the end of each era, validators are rewarded {NETWORK_UNIT} based on how many era points they accumulated in that era. This {NETWORK_UNIT} reward is then distributed amongst the nominators of the validator via a payout.",
-          "1 era is currently 12 hours in Vara."
+          "1 era is currently 24 hours in Polkadot."
         ]
       ],
       "eraPoints": [
@@ -133,6 +125,14 @@
           "The total amount of {NETWORK_UNIT} paid out for the last active era.",
           "Payouts are distributed evenly amongst the active validators for that era, and are then further distributed to the active nominators that took part in that era.",
           "The payout amounts received depend on how much {NETWORK_UNIT} the nominators, and validators themselves, had bonded for that era."
+        ]
+      ],
+      "ledgerAppNotOnLatestRuntimeVersion": [
+        "Ledger App Not on Latest Runtime Version",
+        [
+          "This message occurs when your Ledger app is not configured to the latest runtime metadata. You may still attempt to submit your transaction, but it may fail.",
+          "To prevent this warning, update your Ledger device to the latest version.",
+          "There is usually a delay between runtime upgrades deploying and Ledger app updates. When an app update is available, you will be able to update your app in Ledger Live."
         ]
       ],
       "ledgerHardwareWallets": [
@@ -201,7 +201,7 @@
           "The status of your nominations at a glance.",
           "A set of nominations will be inactive when none of those nominees are participating in the current validator set (the set of validators currently elected to validate the network).",
           "When at least one of your nominees are active, this nomination status will display as actively nominating - but this still does not guarantee rewards.",
-          "The top {MAX_NOMINATOR_REWARDED_PER_VALIDATOR} nominators of each active validator receive rewards on {NETWORK_NAME}. So if a nominee is active and over-subscribed, you must be a part of the {MAX_NOMINATOR_REWARDED_PER_VALIDATOR} highest bonded nominators to receive rewards.",
+          "The top {MAX_EXPOSURE_PAGE_SIZE} nominators of each active validator receive rewards on {NETWORK_NAME}. So if a nominee is active and over-subscribed, you must be a part of the {MAX_EXPOSURE_PAGE_SIZE} highest bonded nominators to receive rewards.",
           "If an active nominee is not over-subscribed, you will receive rewards."
         ]
       ],
@@ -231,7 +231,7 @@
       "overSubscribed": [
         "Over Subscribed",
         [
-          "Only the top {MAX_NOMINATOR_REWARDED_PER_VALIDATOR} nominators for each validator are rewarded in {NETWORK_NAME}. When this number is surpassed, this validator is considered over subscribed."
+          "Only the top {MAX_EXPOSURE_PAGE_SIZE} nominators for each validator are rewarded in {NETWORK_NAME}. When this number is surpassed, this validator is considered over subscribed."
         ]
       ],
       "payout": [
@@ -344,21 +344,18 @@
           "In this scenario, \"None\" is displayed under the \"Reserve For Existential Deposit\" section in your Reserve Balance settings."
         ]
       ],
+      "rewardsByCountryAndNetwork": [
+        "Rewards By Country And Network",
+        [
+          "Shows the estimated percentage of rewards that are generated from different countries and IP networks.",
+          "Polkawatch decentralization analytics are computed by aggregating rewards by the IP Geolocation of the Validator. The sample period is the last 60 days."
+        ]
+      ],
       "selfStake": [
         "Self Stake",
         [
           "The amount of {NETWORK_UNIT} the validator has bonded themselves.",
           "This value is added to the amount of {NETWORK_UNIT} bonded by nominators to form the total stake of the validator."
-        ]
-      ],
-      "stashAndControllerAccounts": [
-        "Stash and Controller Accounts",
-        [
-          "The Stash and Controller are simply {NETWORK_NAME} accounts that manage your staking activity.",
-          "Your Stash account is the account used to hold your staked funds, whereas the Controller account is used to carry out Staking actions on the Stash account's behalf.",
-          "When you switch accounts in this app, you are actually switching your Stash account. Your Controller account is then automatically fetched for you.",
-          "This app assumes you have both Stash and Controller accounts imported. If you do not, you will not be able to use all app functions.",
-          "You can assign a different Controller account on the Stake page."
         ]
       ],
       "supplyStaked": [
@@ -398,14 +395,17 @@
       ]
     },
     "externals": {
-      "VaraOverview": "Vara Network overview",
-      "tokenomy": "VARA Token Utility & Crypto Economics",
-      "nominate": "How to set up as a nominator",
+      "bondMore": "Bond More Tokens to Your Existing Stake",
+      "changeAccount": "Changing your Controller Account",
+      "changeDestination": "Changing Your Payout Destination",
+      "changeNominations": "Changing Your Nominations",
       "chooseValidators": "How do I Know Which Validators to Choose?",
       "claimRewards": "Claiming Nomination Pool Rewards",
-      "createAccounts": "How to Create Vara Accounts",
-      "stakePools": "Staking via Nomination Pools",
-      "stakeVARA": "Staking your VARA",
+      "connectAccounts": "How to Connect Your Accounts",
+      "createPools": "Creating Nomination Pools",
+      "howToUse": "How to Use the Staking Dashboard: Overview",
+      "rebonding": "Rebonding",
+      "stakeDot": "Staking your DOT",
       "unbondingTokens": "Unbonding Your Tokens"
     },
     "modal": {

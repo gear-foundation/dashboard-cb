@@ -3,19 +3,34 @@
 
 import { WellKnownChain } from '@substrate/connect';
 import { DefaultParams } from 'consts';
-import { ReactComponent as VaraIconSVG } from 'img/vara_icon.svg';
-import { ReactComponent as VaraInlineSVG } from 'img/vara_inline.svg';
-import { ReactComponent as VaraTokenSVG } from 'img/vara_token.svg';
-import { ReactComponent as VaraLogoSVG } from 'img/logo-vara-black.svg';
+import VaraIconSVG from 'img/vara_icon.svg?react';
+import VaraInlineSVG from 'img/vara_inline.svg?react';
+import VaraTokenSVG from 'img/vara_token.svg?react';
+import VaraLogoSVG from 'img/logo-vara-black.svg?react';
 
-import type { Networks } from 'types';
+import type { NetworkName, Networks } from 'types';
+import BigNumber from 'bignumber.js';
+
+// DEPRECATION: Paged Rewards
+//
+// Temporary until paged rewards migration has completed on all networks.
+export const NetworksWithPagedRewards: NetworkName[] = ['westend'];
+export const PagedRewardsStartEra: Record<NetworkName, BigNumber | null> = {
+  vara: null,
+  polkadot: null,
+  kusama: null,
+  westend: new BigNumber(7167),
+};
 
 export const NetworkList: Networks = {
   vara: {
     name: 'vara',
     endpoints: {
-      rpc: 'wss://rpc.vara-network.io',
       lightClient: WellKnownChain.polkadot,
+      defaultRpcEndpoint: 'Parity',
+      rpcEndpoints: {
+        Parity: 'wss://rpc.vara-network.io',
+      },
     },
     namespace: 'fe1b4c55fd4d668101126434206571a7',
     colors: {
@@ -62,8 +77,9 @@ export const NetworkList: Networks = {
     },
     params: {
       ...DefaultParams,
-      stakeTarget: 0.8,
+      stakeTarget: 0.75,
     },
     defaultFeeReserve: 0.1,
+    maxExposurePageSize: new BigNumber(512),
   },
 };

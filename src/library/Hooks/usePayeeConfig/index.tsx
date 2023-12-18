@@ -4,7 +4,7 @@
 import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 import {
   faArrowDown,
-  // faArrowRightFromBracket,
+  faArrowRightFromBracket,
   faRedoAlt,
   faStop,
 } from '@fortawesome/free-solid-svg-icons';
@@ -37,13 +37,13 @@ export const usePayeeConfig = () => {
         subtitle: t('payee.stash.subtitle'),
         icon: faArrowDown,
       },
-      // {
-      //   value: 'Account',
-      //   title: t('payee.account.title', { context: 'default' }),
-      //   activeTitle: t('payee.account.title'),
-      //   subtitle: t('payee.account.subtitle'),
-      //   icon: faArrowRightFromBracket,
-      // },
+      {
+        value: 'Account',
+        title: t('payee.account.title', { context: 'default' }),
+        activeTitle: t('payee.account.title'),
+        subtitle: t('payee.account.subtitle'),
+        icon: faArrowRightFromBracket,
+      },
     ];
 
     if (extended) {

@@ -10,15 +10,21 @@ import {
 } from '@polkadot-cloud/utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { useApi } from 'contexts/Api';
-import { useConnect } from 'contexts/Connect';
-import type { AnyApi, MaybeAccount } from 'types';
+import type { AnyApi, MaybeAddress } from 'types';
 import { useEffectIgnoreInitial } from '@polkadot-cloud/react/hooks';
+import { useNetwork } from 'contexts/Network';
+import { useImportedAccounts } from 'contexts/Connect/ImportedAccounts';
+import { useOtherAccounts } from 'contexts/Connect/OtherAccounts';
+import { useExternalAccounts } from 'contexts/Connect/ExternalAccounts';
 import * as defaults from './defaults';
 import type { BondedAccount, BondedContextInterface } from './types';
 
 export const BondedProvider = ({ children }: { children: React.ReactNode }) => {
-  const { api, isReady, network } = useApi();
-  const { accounts, addExternalAccount } = useConnect();
+  const { network } = useNetwork();
+  const { api, isReady } = useApi();
+  const { accounts } = useImportedAccounts();
+  const { addExternalAccount } = useExternalAccounts();
+  const { addOrReplaceOtherAccount } = useOtherAccounts();
 
   // Balance accounts state.
   const [bondedAccounts, setBondedAccounts] = useState<BondedAccount[]>([]);
@@ -103,7 +109,8 @@ export const BondedProvider = ({ children }: { children: React.ReactNode }) => {
         // add bonded (controller) account as external account if not presently imported
         if (newController) {
           if (accounts.find((s) => s.address === newController) === undefined) {
-            addExternalAccount(newController, 'system');
+            const result = addExternalAccount(newController, 'system');
+            if (result) addOrReplaceOtherAccount(result.account, result.type);
           }
         }
 
@@ -130,18 +137,18 @@ export const BondedProvider = ({ children }: { children: React.ReactNode }) => {
     return unsub;
   };
 
-  const getBondedAccount = (address: MaybeAccount) =>
+  const getBondedAccount = (address: MaybeAddress) =>
     bondedAccountsRef.current.find((a) => a.address === address)?.bonded ||
     null;
 
-  const getAccountNominations = (address: MaybeAccount) =>
+  const getAccountNominations = (address: MaybeAddress) =>
     bondedAccountsRef.current.find((a) => a.address === address)?.nominations
       ?.targets || [];
 
-  const getAccount = (address: MaybeAccount) =>
+  const getAccount = (address: MaybeAddress) =>
     bondedAccountsRef.current.find((a) => a.address === address) || null;
 
-  const isController = (address: MaybeAccount) =>
+  const isController = (address: MaybeAddress) =>
     bondedAccountsRef.current.filter((a) => (a?.bonded || '') === address)
       ?.length > 0 || false;
 

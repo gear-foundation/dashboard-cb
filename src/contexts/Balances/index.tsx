@@ -12,9 +12,12 @@ import {
 import BigNumber from 'bignumber.js';
 import React, { useRef, useState } from 'react';
 import { useApi } from 'contexts/Api';
-import { useConnect } from 'contexts/Connect';
-import type { AnyApi, MaybeAccount } from 'types';
+import type { AnyApi, MaybeAddress } from 'types';
 import { useEffectIgnoreInitial } from '@polkadot-cloud/react/hooks';
+import { useNetwork } from 'contexts/Network';
+import { useImportedAccounts } from 'contexts/Connect/ImportedAccounts';
+import { useExternalAccounts } from 'contexts/Connect/ExternalAccounts';
+import { useOtherAccounts } from 'contexts/Connect/OtherAccounts';
 import { getLedger } from './Utils';
 import * as defaults from './defaults';
 import type {
@@ -33,8 +36,11 @@ export const BalancesProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { api, isReady, network } = useApi();
-  const { accounts, addExternalAccount, getAccount } = useConnect();
+  const { api, isReady } = useApi();
+  const { network } = useNetwork();
+  const { accounts, getAccount } = useImportedAccounts();
+  const { addOrReplaceOtherAccount } = useOtherAccounts();
+  const { addExternalAccount } = useExternalAccounts();
 
   const [balances, setBalances] = useState<Balances[]>([]);
   const balancesRef = useRef(balances);
@@ -97,7 +103,8 @@ export const BalancesProvider = ({
 
             // add stash as external account if not present
             if (!getAccount(stash.toString())) {
-              addExternalAccount(stash.toString(), 'system');
+              const result = addExternalAccount(stash.toString(), 'system');
+              if (result) addOrReplaceOtherAccount(result.account, result.type);
             }
 
             setStateWithRef(
@@ -140,7 +147,7 @@ export const BalancesProvider = ({
             balance: {
               free,
               reserved: new BigNumber(accountData.reserved.toString()),
-              frozen: new BigNumber(accountData.miscFrozen.toString()),
+              frozen: new BigNumber(accountData.frozen.toString()),
             },
             locks: locks.toHuman().map((l: AnyApi) => ({
               ...l,
@@ -187,21 +194,21 @@ export const BalancesProvider = ({
   }, [network]);
 
   // Gets a ledger for a stash address.
-  const getStashLedger = (address: MaybeAccount) => {
+  const getStashLedger = (address: MaybeAddress) => {
     return getLedger(ledgersRef.current, 'stash', address);
   };
 
   // Gets an account's balance metadata.
-  const getBalance = (address: MaybeAccount) =>
+  const getBalance = (address: MaybeAddress) =>
     balancesRef.current.find((a) => a.address === address)?.balance ||
     defaults.defaultBalance;
 
   // Gets an account's locks.
-  const getLocks = (address: MaybeAccount) =>
+  const getLocks = (address: MaybeAddress) =>
     balancesRef.current.find((a) => a.address === address)?.locks ?? [];
 
   // Gets an account's nonce.
-  const getNonce = (address: MaybeAccount) =>
+  const getNonce = (address: MaybeAddress) =>
     balancesRef.current.find((a) => a.address === address)?.nonce ?? 0;
 
   return (

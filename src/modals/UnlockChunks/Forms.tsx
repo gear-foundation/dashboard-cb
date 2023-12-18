@@ -5,6 +5,7 @@ import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import {
   ActionItem,
   ButtonSubmitInvert,
+  ModalPadding,
   ModalWarnings,
 } from '@polkadot-cloud/react';
 import { planckToUnit, rmCommas } from '@polkadot-cloud/utils';
@@ -13,7 +14,6 @@ import { forwardRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApi } from 'contexts/Api';
 import { useBonded } from 'contexts/Bonded';
-import { useConnect } from 'contexts/Connect';
 import { useActivePools } from 'contexts/Pools/ActivePools';
 import { useBondedPools } from 'contexts/Pools/BondedPools';
 import { usePoolMembers } from 'contexts/Pools/PoolMembers';
@@ -24,13 +24,18 @@ import { useSignerWarnings } from 'library/Hooks/useSignerWarnings';
 import { useSubmitExtrinsic } from 'library/Hooks/useSubmitExtrinsic';
 import { SubmitTx } from 'library/SubmitTx';
 import { useOverlay } from '@polkadot-cloud/react/hooks';
+import { useNetwork } from 'contexts/Network';
+import { useActiveAccounts } from 'contexts/ActiveAccounts';
 import { ContentWrapper } from './Wrappers';
 
 export const Forms = forwardRef(
-  ({ setSection, unlock, task }: any, ref: any) => {
+  ({ setSection, unlock, task, incrementCalculateHeight }: any, ref: any) => {
     const { t } = useTranslation('modals');
-    const { api, network, consts } = useApi();
-    const { activeAccount } = useConnect();
+    const { api, consts } = useApi();
+    const {
+      networkData: { units, unit },
+    } = useNetwork();
+    const { activeAccount } = useActiveAccounts();
     const { removeFavorite: removeFavoritePool } = usePoolsConfig();
     const { membership } = usePoolMemberships();
     const { selectedActivePool } = useActivePools();
@@ -45,7 +50,6 @@ export const Forms = forwardRef(
 
     const { bondFor, poolClosure } = options || {};
     const { historyDepth } = consts;
-    const { units } = network;
     const controller = getBondedAccount(activeAccount);
 
     const isStaking = bondFor === 'nominator';
@@ -53,13 +57,8 @@ export const Forms = forwardRef(
 
     // valid to submit transaction
     const [valid, setValid] = useState<boolean>(
-      unlock?.value?.toNumber() > 0 ?? false
+      (unlock?.value?.toNumber() || 0) > 0 || false
     );
-
-    // ensure unlock value is valid
-    useEffect(() => {
-      setValid(unlock?.value?.toNumber() > 0 ?? false);
-    }, [unlock]);
 
     // tx to submit
     const getTx = () => {
@@ -98,7 +97,7 @@ export const Forms = forwardRef(
         // if no more bonded funds from pool, remove from poolMembers list
         if (bondFor === 'pool') {
           const points = membership?.points ? rmCommas(membership.points) : 0;
-          const bonded = planckToUnit(new BigNumber(points), network.units);
+          const bonded = planckToUnit(new BigNumber(points), units);
           if (bonded.isZero()) {
             removePoolMember(activeAccount);
           }
@@ -114,10 +113,20 @@ export const Forms = forwardRef(
       submitExtrinsic.proxySupported
     );
 
+    // Ensure unlock value is valid.
+    useEffect(() => {
+      setValid((unlock?.value?.toNumber() || 0) > 0 || false);
+    }, [unlock]);
+
+    // Trigger modal resize when commission options are enabled / disabled.
+    useEffect(() => {
+      incrementCalculateHeight();
+    }, [valid]);
+
     return (
       <ContentWrapper>
         <div ref={ref}>
-          <div className="padding">
+          <ModalPadding horizontalOnly>
             {warnings.length > 0 ? (
               <ModalWarnings withMargin>
                 {warnings.map((text, i) => (
@@ -129,9 +138,10 @@ export const Forms = forwardRef(
               {task === 'rebond' && (
                 <>
                   <ActionItem
-                    text={`${t('rebond')} ${planckToUnit(value, units)} ${
-                      network.unit
-                    }`}
+                    text={`${t('rebond')} ${planckToUnit(
+                      value,
+                      units
+                    )} ${unit}`}
                   />
                   <p>{t('rebondSubtitle')}</p>
                 </>
@@ -139,15 +149,16 @@ export const Forms = forwardRef(
               {task === 'withdraw' && (
                 <>
                   <ActionItem
-                    text={`${t('withdraw')} ${planckToUnit(value, units)} ${
-                      network.unit
-                    }`}
+                    text={`${t('withdraw')} ${planckToUnit(
+                      value,
+                      units
+                    )} ${unit}`}
                   />
                   <p>{t('withdrawSubtitle')}</p>
                 </>
               )}
             </div>
-          </div>
+          </ModalPadding>
           <SubmitTx
             fromController={isStaking}
             valid={valid}
