@@ -29,6 +29,7 @@ export const NetworkList: Networks = {
       lightClient: WellKnownChain.polkadot,
       defaultRpcEndpoint: 'Parity',
       rpcEndpoints: {
+        // TODO: undo on realese
         Parity: 'ws://localhost:9944',
       },
     },
